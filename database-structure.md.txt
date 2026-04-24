@@ -1,0 +1,7 @@
+Collections:
+- users → stores user info
+- routines → daily schedule
+- friends → connections
+- livestatuses → live GPS tracking
+- commutelogs → history
+- transportdetails → metro + bus data
