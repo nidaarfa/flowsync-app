@@ -1,0 +1,170 @@
+# 🚀 FlowSync – App Flow Explanation (Step-by-step)
+
+## 1. User opens app → what happens?
+
+- App loads Home Screen  
+- Backend API call → `/user` fetches:
+  - user details  
+  - saved routine  
+
+- Backend fetches:
+  - next 3 buses (from transport API / mock data)  
+  - latest friend status (from LiveStatus)  
+
+- Socket.IO connection starts for real-time updates  
+
+### What user sees:
+
+- ⏱ Countdown → “Leave in 6 mins”  
+- 🚌 Next buses (with delays)  
+- 👥 Friend statuses  
+- 🤖 Prediction % (catch/miss)  
+
+👉 This matches the “command center” idea  
+
+---
+
+## 2. User adds routine → what happens?
+
+### User inputs:
+- wake time  
+- steps (wake → shower → leave → bus)  
+
+### App sends POST request:
+```
+POST /routine
+```
+
+### Backend:
+- stores routine in **Routines collection**
+- links it to user (`userId`)
+
+### AI Layer:
+- tracks actual timings daily  
+- updates habit learning  
+
+### Output:
+- Routine displayed step-by-step  
+- Future predictions improve over time  
+
+---
+
+## 3. Bus/Metro screen → what should show?
+
+### Backend fetches:
+- next 3 buses  
+- delays (updated every 60 sec)  
+
+### UI should show:
+
+- 🚌 Bus list:
+  - Bus 1 → On Time / Delayed  
+  - Bus 2 → Next option  
+
+- ⏱ Time left  
+- 🚶 Walk time  
+
+### 🗺 Full journey:
+Walk → Metro → Bus → College  
+
+If delay:
+👉 “Take next bus at 9:01”  
+
+---
+
+## 4. Friend location/status → what should happen?
+
+### User actions:
+- “On the Way”  
+- “Running Late”  
+
+### App sends:
+- status + GPS → Socket.IO  
+
+### Backend:
+- updates **LiveStatus collection**  
+- broadcasts to all friends  
+
+### Friends receive:
+- real-time update  
+
+### UI shows:
+- 📍 Live moving pins on map  
+- 👤 Status labels:
+  - On the way  
+  - Late  
+  - On bus  
+
+### Animations:
+- walking → pulse  
+- bus → moving icon  
+
+---
+
+## 5. Prediction → what input and output?
+
+### ✅ Inputs:
+- current time  
+- bus departure time  
+- walk time to stop  
+- buffer time  
+
+### ⚙️ Logic:
+```
+timeToLeave = busTime - walkTime - buffer
+```
+
+### 🤖 Output:
+- If `currentTime > timeToLeave` → ❌ MISS  
+- Else → ✅ CAN CATCH  
+
+### Example:
+- Bus: 8:42  
+- Walk: 15 min  
+- Current time: 8:30  
+
+👉 Output:
+- “MISS”  
+- Suggest: “Take 9:01 bus”  
+
+---
+
+## 6. Insights → what should show?
+
+### Backend uses:
+- **CommuteLog data**
+
+### UI shows:
+
+- 📊 Weekly chart:
+  - commute time per day  
+
+- ⚠️ Pattern detection:
+  - “Late every Monday”  
+
+- 🔥 Streak:
+  - consecutive on-time days  
+
+- 🏆 Friend leaderboard:
+  - most punctual  
+
+- 📈 Personal stats:
+  - best week  
+  - avg leave time  
+  - missed buses  
+
+---
+
+## 💡 FINAL FLOW
+
+```
+User opens app
+   ↓
+Backend fetches data (user + buses + friends)
+   ↓
+Real-time updates via Socket.IO
+   ↓
+AI predicts catch/miss
+   ↓
+User sees insights + improves daily
+```
